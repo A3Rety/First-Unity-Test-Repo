@@ -1,9 +1,16 @@
+using TMPro;
 using UnityEngine;
+using UnityEngine.AI;
 
 public class GameStateManager : MonoBehaviour
 {
     public static GameStateManager Singleton { get; private set; }
-    
+
+    private AudioSource _audioSource;
+    [SerializeField] private AudioClip _winSound;
+    [SerializeField] private AudioClip _loseSound;
+
+
 
     private void Awake()
     {
@@ -12,7 +19,7 @@ public class GameStateManager : MonoBehaviour
             Singleton = this;
             DontDestroyOnLoad(Singleton);
         }
-        else 
+        else
         {
             Destroy(gameObject);
         }
@@ -21,6 +28,42 @@ public class GameStateManager : MonoBehaviour
     private void Start()
     {
         ScoreManager.Singleton.OnScoreChanged += Left;
+
+        _audioSource = GetComponent<AudioSource>();
+    }
+
+    public void WinGame()
+    {
+        EndGame();
+
+        TextMeshProUGUI title = GameObject.Find("Text_GameState").GetComponent<TextMeshProUGUI>();
+        title.text = "Victory!";
+
+        _audioSource.PlayOneShot(_winSound);
+    }
+
+    public void LoseGame()
+    {
+        EndGame();
+
+        TextMeshProUGUI title = GameObject.Find("Text_GameState").GetComponent<TextMeshProUGUI>();
+        title.text = "Game Over!";
+
+        _audioSource.PlayOneShot(_loseSound);
+    }
+
+    private void EndGame()
+    {
+        GameObject[] allEnemies = GameObject.FindGameObjectsWithTag("Enemy");
+        GameObject player = GameObject.FindGameObjectWithTag("Player");
+
+        foreach (var obj in allEnemies)
+        {
+            obj.GetComponent<EnemyMovement>().enabled = false;
+            obj.GetComponent<NavMeshAgent>().enabled = false;
+        }
+
+        player.GetComponent<PlayerController>().enabled = false;
     }
 
     public int FindActivePickups()
@@ -45,7 +88,7 @@ public class GameStateManager : MonoBehaviour
         Debug.Log("Осталось собрать: " + count);
 
         if (count <= 0)
-            Debug.Log("Victory!");
+            WinGame();
     }
 
     private void OnDestroy()

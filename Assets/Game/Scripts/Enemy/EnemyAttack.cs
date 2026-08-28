@@ -6,7 +6,7 @@ public class EnemyAttack : MonoBehaviour
     private float _lastDamageTime = -Mathf.Infinity;
 
     [SerializeField] private int _damage = 1;
-    [SerializeField] private float _pounchPower = 2.0f;
+    [SerializeField] private float _pounchPower = 10.0f;
 
 
     private void OnCollisionEnter(Collision player)
@@ -31,5 +31,7 @@ public class EnemyAttack : MonoBehaviour
         Vector3 direction = (obj.transform.position - transform.position).normalized;
 
         player.AddForce(direction * _pounchPower, ForceMode.Impulse);
+
+        GetComponent<Rigidbody>().AddForce(-direction * _pounchPower / 3f, ForceMode.Impulse);
     }
 }

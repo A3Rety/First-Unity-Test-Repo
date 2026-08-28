@@ -1,8 +1,8 @@
 using TMPro;
 using UnityEngine;
 using UnityEngine.AI;
-using UnityEngine.SceneManagement;
 using UnityEngine.InputSystem;
+using UnityEngine.SceneManagement;
 
 public class GameStateManager : MonoBehaviour
 {
@@ -17,6 +17,20 @@ public class GameStateManager : MonoBehaviour
     [SerializeField] private AudioClip _loseSound;
 
 
+    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+    private void ResetStatic()
+    {
+        var oldRef = Singleton != null ? Singleton.gameObject : null;
+        Singleton = null;
+        IsPlaying = false;
+
+#if UNITY_EDITOR
+        if (oldRef != null && oldRef.scene.name == "DontDestroyOnLoad")
+        {
+            Object.DestroyImmediate(oldRef.gameObject);
+        }
+#endif
+    }
 
     private void Awake()
     {

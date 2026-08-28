@@ -7,10 +7,10 @@ public class ScoreManager : MonoBehaviour
     public event System.Action OnScoreChanged;
 
     private int _score;
-    public int Score 
+    public int Score
     {
         get => _score;
-        private set 
+        private set
         {
             if (value <= 0)
                 value = 0;
@@ -21,6 +21,20 @@ public class ScoreManager : MonoBehaviour
         }
     }
 
+
+    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+    private void ResetStatic()
+    {
+        var oldRef = Singleton != null ? Singleton.gameObject : null;
+        Singleton = null;
+
+#if UNITY_EDITOR
+        if (oldRef != null && oldRef.scene.name == "DontDestroyOnLoad")
+        {
+            Object.DestroyImmediate(oldRef);
+        }
+#endif
+    }
 
     private void Awake()
     {

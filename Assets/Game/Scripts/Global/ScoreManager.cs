@@ -23,7 +23,7 @@ public class ScoreManager : MonoBehaviour
 
 
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
-    private void ResetStatic()
+    private static void ResetStatic()
     {
         var oldRef = Singleton != null ? Singleton.gameObject : null;
         Singleton = null;

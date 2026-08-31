@@ -7,18 +7,20 @@ using UnityEngine.SceneManagement;
 public class GameStateManager : MonoBehaviour
 {
     public static GameStateManager Singleton { get; private set; }
+
+    public event System.Action OnGameEnd;
+
     public static bool IsPlaying { get; private set; }
     private bool _isRestartable;
 
     private GameObject _startCanvas;
-
     private AudioSource _audioSource;
     [SerializeField] private AudioClip _winSound;
     [SerializeField] private AudioClip _loseSound;
 
 
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
-    private void ResetStatic()
+    private static void ResetStatic()
     {
         var oldRef = Singleton != null ? Singleton.gameObject : null;
         Singleton = null;
@@ -27,7 +29,7 @@ public class GameStateManager : MonoBehaviour
 #if UNITY_EDITOR
         if (oldRef != null && oldRef.scene.name == "DontDestroyOnLoad")
         {
-            Object.DestroyImmediate(oldRef.gameObject);
+            Object.DestroyImmediate(oldRef);
         }
 #endif
     }
@@ -115,21 +117,12 @@ public class GameStateManager : MonoBehaviour
 
     private void EndGame()
     {
+        OnGameEnd?.Invoke();
+
         IsPlaying = false;
         _isRestartable = true;
 
-        GameObject[] allEnemies = GameObject.FindGameObjectsWithTag("Enemy");
-        GameObject player = GameObject.FindGameObjectWithTag("Player");
         TextMeshProUGUI restartText = GameObject.Find("Text_Restart").GetComponent<TextMeshProUGUI>();
-
-        foreach (var obj in allEnemies)
-        {
-            obj.GetComponent<Rigidbody>().constraints = RigidbodyConstraints.None;
-            obj.GetComponent<EnemyMovement>().enabled = false;
-            obj.GetComponent<NavMeshAgent>().enabled = false;
-        }
-
-        player.GetComponent<PlayerController>().enabled = false;
         restartText.text = "Press R for Restart game";
     }
 

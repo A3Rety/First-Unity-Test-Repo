@@ -11,16 +11,24 @@ public class PlayerController : MonoBehaviour
 
     [SerializeField] private float _speed = 10f;
 
+    private bool _isPlaying;
+
 
     private void Start()
     {
+        GameStateManager.Singleton.OnGameEnd += StopMoving;
+
         _rb = GetComponent<Rigidbody>();
+        _isPlaying = true;
     }
 
     private void FixedUpdate()
     {
-        movement = new Vector3(_movementX, 0.0f, _movementY);
-        _rb.AddForce(movement * _speed);
+        if (_isPlaying)
+        {
+            movement = new Vector3(_movementX, 0.0f, _movementY);
+            _rb.AddForce(movement * _speed);
+        }
     }
 
     private void OnMove(InputValue movementValue)
@@ -29,5 +37,16 @@ public class PlayerController : MonoBehaviour
 
         _movementX = movementVector.x;
         _movementY = movementVector.y;
+
+    }
+
+    private void StopMoving()
+    {
+        _isPlaying = false;
+    }
+
+    private void OnDestroy()
+    {
+        GameStateManager.Singleton.OnGameEnd -= StopMoving;
     }
 }

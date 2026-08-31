@@ -1,5 +1,5 @@
-using UnityEngine;
 using TMPro;
+using UnityEngine;
 
 public class Score : MonoBehaviour
 {
@@ -8,9 +8,9 @@ public class Score : MonoBehaviour
 
     private void Start()
     {
-        _text = GetComponent<TextMeshProUGUI>();
-
         ScoreManager.Singleton.OnScoreChanged += ChangeScore;
+
+        _text = GetComponent<TextMeshProUGUI>();
     }
 
     private void ChangeScore()
